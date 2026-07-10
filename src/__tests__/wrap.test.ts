@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { wrap, getRecorder, __resetStreamHelperWarning } from "../client.js";
 
-describe("audit round2 M27: 高レベル stream() helper の gate bypass 警告", () => {
+describe("高レベル stream() helper の gate bypass 警告", () => {
   it("budgetGate 有効 + messages.stream() あり = wrap 時に警告", () => {
     __resetStreamHelperWarning();
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
@@ -144,7 +144,7 @@ describe("wrap (OpenAI)", () => {
     expect(records[0]?.parentSpanId).toBe("span_parent_F2");
   });
 
-  it("wrap option の sessionId が record に引き継がれる (session tracking)", async () => {
+  it("wrap option の sessionId が record に carry される (= v1.5 session tracking)", async () => {
     const mock = makeMockOpenAI(baseResponse);
     const client = wrap(mock, {
       sessionId: "sess_conversation_abc",
