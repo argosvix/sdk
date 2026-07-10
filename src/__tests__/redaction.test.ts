@@ -38,7 +38,7 @@ describe("redactPii", () => {
     expect(redactPii("card 4111111111111111")).toBe("card [REDACTED_CC]");
   });
 
-  it("audit round2 M31 = redacts a dot-separated credit card fully (no last-4 leak)", () => {
+  it("redacts a dot-separated credit card fully (no last-4 leak)", () => {
     const out = redactPii("card 4111.1111.1111.1111");
     expect(out).toBe("card [REDACTED_CC]");
     expect(out).not.toContain("1111");
@@ -196,7 +196,7 @@ describe("hasAnyRedaction", () => {
   });
 });
 
-describe("redactPii audit round2 regressions", () => {
+describe("redactPii regressions", () => {
   it("全角数字のクレジットカード番号をマスクする (#16)", () => {
     const out = redactPii("カード番号は ４１１１１１１１１１１１１１１１ です");
     expect(out).toContain("[REDACTED_CC]");

@@ -137,7 +137,7 @@ describe("Recorder", () => {
       errSpy.mockRestore();
     });
 
-    it("auto-flush と explicit flush が serialize される (R29 HIGH 1)", async () => {
+    it("auto-flush と explicit flush が serialize される", async () => {
       // Reaching bufferMaxSize=2 triggers an auto-flush; even if an additional
       // record + explicit flush arrive while that fetch is still in flight, the
       // next flush must wait for the in-flight one to complete. Order is
@@ -190,7 +190,7 @@ describe("Recorder", () => {
     });
   });
 
-  it("process global 不在の edge runtime でも record() が throw しない (R29 HIGH 2)", () => {
+  it("process global 不在の edge runtime でも record() が throw しない", () => {
     // Some Cloudflare Workers modes and Vercel Edge do not expose Node's `process`
     // global. If record() read `process.env[...]` unconditionally it would throw and
     // take the wrapped LLM call down with it. With the typeof guard in place it must
