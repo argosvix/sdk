@@ -1,0 +1,89 @@
+{
+  "name": "@argosvix/sdk",
+  "version": "0.4.22-alpha.0",
+  "description": "Drop-in observability wrapper for OpenAI, Anthropic, Gemini, Mistral SDK clients. One-line wrap() = cost / latency / quality records.",
+  "keywords": [
+    "argosvix",
+    "observability",
+    "llm",
+    "openai",
+    "anthropic",
+    "gemini",
+    "mistral",
+    "ai-monitoring",
+    "ai-cost-tracking",
+    "transparent-proxy"
+  ],
+  "license": "MIT",
+  "author": "Yuto Makihara",
+  "homepage": "https://argosvix.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/argosvix/sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/argosvix/sdk/issues",
+    "email": "hello@argosvix.com"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22.20.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "echo \"(lint TBD)\" && exit 0",
+    "prepublishOnly": "npm run build && npm test",
+    "pack:dry": "npm pack --dry-run"
+  },
+  "peerDependencies": {
+    "@anthropic-ai/sdk": ">=0.20.0",
+    "@google/generative-ai": ">=0.20.0",
+    "@google/genai": ">=2.0.0",
+    "@mistralai/mistralai": ">=1.0.0",
+    "openai": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@anthropic-ai/sdk": {
+      "optional": true
+    },
+    "@google/generative-ai": {
+      "optional": true
+    },
+    "@google/genai": {
+      "optional": true
+    },
+    "@mistralai/mistralai": {
+      "optional": true
+    },
+    "openai": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.19",
+    "openai": "^4.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.9"
+  }
+}
