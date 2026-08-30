@@ -1,8 +1,8 @@
 # @argosvix/sdk
 
-Transparent observability wrapper for AI provider SDKs. Wrap a single line of code and get cost, latency, token, and error records for every LLM call across OpenAI, Anthropic, Gemini, and Mistral.
+Transparent observability wrapper for AI provider SDKs. Wrap a single line of code and get cost, latency, token, and error records for every LLM call across OpenAI, Anthropic, Gemini, Mistral, xAI Grok, Moonshot Kimi, DeepSeek, and Alibaba Qwen.
 
-> 🟢 **Alpha released** — backend ingest (`ingest.argosvix.com`) and dashboard (`dashboard.argosvix.com`) are live. Published on npm as `@argosvix/sdk@alpha`. The entire sign-up to API-key flow runs in the browser; a Free plan and paid plans (Pro / Team) are available.
+> 🟢 **Live** — backend ingest (`ingest.argosvix.com`) and dashboard (`dashboard.argosvix.com`) are live. Published on npm as `@argosvix/sdk`. The entire sign-up to API-key flow runs in the browser; a Free plan and paid plans (Pro / Team) are available.
 >
 > Design principles:
 > - **No end-user PII is sent.** By default, prompt and completion bodies are never recorded; only token counts, cost, latency, and error codes leave your process. Content capture is a separate opt-in (`captureContent`, see below) and always applies PII masking before send.
@@ -19,12 +19,21 @@ Transparent observability wrapper for AI provider SDKs. Wrap a single line of co
 | **Mistral** | ✅ | ✅ | `chat.complete` + `chat.stream` |
 | **Gemini legacy** (`@google/generative-ai`) | ✅ | ✅ | `getGenerativeModel({...}).generateContent` / `generateContentStream` |
 | **Gemini current** (`@google/genai`) | ✅ | ✅ | `client.models.generateContent` / `generateContentStream` |
+| **xAI Grok** | ✅ | ✅ | Through the OpenAI-compatible endpoint. Detected from `baseURL` (`api.x.ai`), or set `provider: "xai"` explicitly |
+| **Moonshot Kimi** | ✅ | ✅ | Through the OpenAI-compatible endpoint. Detected from `baseURL` (`api.moonshot.ai` / `.cn`), or set `provider: "moonshot"` |
+| **DeepSeek** | ✅ | ✅ | Through the OpenAI-compatible endpoint. Detected from `baseURL` (`api.deepseek.com`), or set `provider: "deepseek"` |
+| **Alibaba Qwen** | ✅ | ✅ | Through the OpenAI-compatible endpoint. Detected from `baseURL` (`dashscope.aliyuncs.com` / `dashscope-intl.aliyuncs.com`), or set `provider: "alibaba"` |
+
+Grok, Kimi, DeepSeek, and Qwen reuse the OpenAI wrapper because they serve an
+OpenAI-compatible API. You wrap the same `OpenAI` client you already have; the
+record carries the real provider so cost is priced with that provider's rates.
 
 ## Install
 
 ```bash
-npm install @argosvix/sdk@alpha openai
+npm install @argosvix/sdk openai
 # Also install the SDKs for any other providers you use (Anthropic, Gemini, Mistral).
+# Grok / Kimi / DeepSeek / Qwen need no extra SDK — they use the OpenAI client.
 ```
 
 ### Obtain an API key
@@ -150,7 +159,7 @@ const openai = wrap(new OpenAI(), {
 });
 
 try {
-  await openai.chat.completions.create({ model: "gpt-4o-mini", messages });
+  await openai.chat.completions.create({ model: "gpt-5-mini", messages });
 } catch (err) {
   if (err instanceof ArgosvixBudgetExceededError) {
     // err.spentUsd / err.limitUsd — blocked before reaching the provider
@@ -376,7 +385,7 @@ await withPrompt(p, async () => {
 
 ## Tags + aggregation
 
-Tags are persisted per record. The dashboard supports cross-dimension aggregation such as "cost trend for `service=support-bot`".
+Tags are persisted per record. The backend dashboard supports cross-dimension aggregation such as "cost trend for `service=support-bot`" (Phase C dashboard and beyond).
 
 ## Streaming
 

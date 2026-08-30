@@ -82,6 +82,13 @@ export interface QueryAggregateFilter {
   groupBy?: AggregateGroupBy;
   /** default = "cost" */
   metric?: AggregateMetric;
+  /**
+   * groupBy="day" only. Client timezone offset in minutes (Tokyo = +540,
+   * -840..840) to bucket by local days instead of UTC days. Fixed offset, so
+   * buckets can shift around DST transitions. Rejected with 400 for other
+   * groupBy values.
+   */
+  tzOffsetMinutes?: number;
 }
 
 export interface AggregateGroup {

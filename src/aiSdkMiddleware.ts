@@ -127,8 +127,13 @@ type TraceMeta = Pick<LlmCallRecord, "traceId" | "spanId" | "parentSpanId" | "se
 
 /**
  * Maps the AI SDK's provider string (e.g. "openai.chat" /
- * "anthropic.messages" / "google.generative-ai" / "mistral.chat") onto
- * Argosvix's four providers.
+ * "anthropic.messages" / "google.generative-ai" / "mistral.chat" /
+ * "xai.chat" / "moonshotai.chat" / "deepseek.chat") onto Argosvix's
+ * seven providers.
+ *
+ * The xai / moonshotai / deepseek namespaces were read from the AI SDK's own
+ * provider sources (packages/{xai,moonshotai,deepseek}/src/*-provider.ts on
+ * vercel/ai main), not guessed from the package names.
  *
  * Matching is an exact comparison on the namespace (the part before the first
  * "."). Substring matching is deliberately avoided because it would wrongly
@@ -145,6 +150,13 @@ function mapProvider(raw: string | undefined): Provider | null {
     return "gemini";
   }
   if (ns === "mistral") return "mistral";
+  if (ns === "xai") return "xai";
+  // The official package is @ai-sdk/moonshotai and reports "moonshotai.*";
+  // "moonshot" is accepted for community providers that drop the suffix.
+  if (ns === "moonshotai" || ns === "moonshot") return "moonshot";
+  if (ns === "deepseek") return "deepseek";
+  // Qwen 系 community provider は "qwen" / "alibaba" 名義の両方が流通している
+  if (ns === "alibaba" || ns === "qwen" || ns === "dashscope") return "alibaba";
   return null;
 }
 
@@ -156,7 +168,8 @@ function warnUnsupportedProvider(raw: string | undefined): void {
   warnedUnsupportedProviders.add(label);
   // eslint-disable-next-line no-console
   console.warn(
-    `[argosvix] AI SDK provider "${label}" is not one of openai/anthropic/gemini/mistral; ` +
+    `[argosvix] AI SDK provider "${label}" is not one of ` +
+      `openai/anthropic/gemini/mistral/xai/moonshot/deepseek/alibaba; ` +
       `the call runs normally but is not recorded. Pass config.provider to override.`,
   );
 }

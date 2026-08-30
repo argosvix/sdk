@@ -105,7 +105,7 @@ function safeRun(fn: () => void): void {
 
 /**
  * Maps LangChain's serialized id (e.g. ["langchain","chat_models","openai",
- * "ChatOpenAI"]) or class name onto Argosvix's four providers. The primary
+ * "ChatOpenAI"]) or class name onto Argosvix's providers. The primary
  * check is exact segment equality, avoiding substring false positives. The
  * last segment (the class name, e.g. ChatOpenAI) is additionally checked with
  * includes, so custom wrappers that only expose a class name are still picked
@@ -135,6 +135,19 @@ function mapProvider(llm: LcSerialized | undefined): Provider | null {
     return "gemini";
   }
   if (has("mistralai", "mistral") || cls.includes("mistral")) return "mistral";
+  // ⚠ These segments were read from langchainjs itself
+  //    (libs/providers/langchain-{xai,deepseek}/src, lc_namespace), not guessed.
+  //    Checked before "openai" is not needed: ChatXAI / ChatDeepSeek class names
+  //    do not contain "openai", and their namespaces are distinct.
+  if (has("xai") || cls.includes("chatxai")) return "xai";
+  if (has("deepseek") || cls.includes("deepseek")) return "deepseek";
+  // langchainjs has no first-party Moonshot package; community wrappers use these.
+  if (has("moonshot", "moonshotai") || cls.includes("moonshot")) return "moonshot";
+  // Qwen / DashScope: community wrappers (@langchain/community ChatAlibabaTongyi,
+  // chatqwen 系). Segments read from community sources, not guessed.
+  if (has("alibaba", "dashscope", "qwen") || cls.includes("alibabatongyi") || cls.includes("qwen")) {
+    return "alibaba";
+  }
   return null;
 }
 
@@ -203,7 +216,7 @@ function warnUnsupported(llm: LcSerialized | undefined): void {
   warnedUnsupported.add(label);
   // eslint-disable-next-line no-console
   console.warn(
-    `[argosvix] LangChain model "${label}" is not one of openai/anthropic/gemini/mistral; ` +
+    `[argosvix] LangChain model "${label}" is not one of openai/anthropic/gemini/mistral/xai/moonshot/deepseek/alibaba; ` +
       `the call runs normally but is not recorded. Pass config.provider to override.`,
   );
 }

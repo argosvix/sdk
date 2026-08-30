@@ -41,9 +41,23 @@ export function wrap<T extends object>(client: T, config: ArgosvixConfig = {}): 
   // (observations[] are sent through this recorder's ingest path).
   _registerObservationSink(recorder);
   switch (provider) {
+    // xai / moonshot / deepseek は OpenAI 互換 API 経由なので wrapper 実装は openai を
+    // 共有し、記録上の provider だけ実プロバイダーにする(明示指定 config.provider="xai"
+    // 等でも wrap が成立するように。Codex 2026-07-17 blocker 1)
+    case "xai":
+    case "moonshot":
+    case "deepseek":
+    case "alibaba":
     case "openai": {
-      if (isOpenAIChatLike(client)) wrapOpenAIChat(client, recorder, config);
-      if (isOpenAIResponsesLike(client)) wrapOpenAIResponses(client, recorder, config);
+      // 明示指定(xai / moonshot / openai)はそれを尊重、無指定なら baseURL 判別
+      const compat: Provider =
+        provider !== "openai"
+          ? provider
+          : config.provider === "openai"
+            ? "openai"
+            : resolveOpenAICompatProvider(client);
+      if (isOpenAIChatLike(client)) wrapOpenAIChat(client, recorder, config, compat);
+      if (isOpenAIResponsesLike(client)) wrapOpenAIResponses(client, recorder, config, compat);
       break;
     }
     case "anthropic": {
@@ -113,6 +127,62 @@ function detectProvider(client: object, override?: Provider): Provider | "unknow
   if (isOpenAIChatLike(client) || isOpenAIResponsesLike(client)) return "openai";
 
   return "unknown";
+}
+
+/**
+ * OpenAI 互換クライアントの実プロバイダーを宛先 URL(baseURL)から判別する
+ * (2026-07-17 founder 確定)。xAI / Moonshot は OpenAI 互換 API 経由で使われる
+ * ため、従来は provider "openai" として記録していたが、実プロバイダーで記録する。
+ * baseURL が読めない・未知のホストの場合は従来どおり "openai"(Azure OpenAI 含む)。
+ * config.provider の明示指定は detectProvider 側で常に優先される。
+ */
+function resolveOpenAICompatProvider(client: object): Provider {
+  const base = (client as { baseURL?: unknown }).baseURL;
+  if (typeof base !== "string" || base.length === 0) return "openai";
+  let host = "";
+  try {
+    host = new URL(base).hostname.toLowerCase();
+  } catch {
+    return "openai";
+  }
+  // api.x.ai(docs.x.ai 掲載の公式 API ホスト)
+  if (host === "api.x.ai" || host.endsWith(".x.ai")) return "xai";
+  // api.moonshot.ai / api.moonshot.cn / platform.kimi.ai 系(公式 docs 掲載ホスト)
+  if (
+    host === "api.moonshot.ai" ||
+    host === "api.moonshot.cn" ||
+    host.endsWith(".moonshot.ai") ||
+    host.endsWith(".moonshot.cn") ||
+    host === "api.kimi.ai" ||
+    host === "api.kimi.com" ||
+    host.endsWith(".kimi.ai") ||
+    host.endsWith(".kimi.com")
+  ) {
+    return "moonshot";
+  }
+  // api.deepseek.com(api-docs.deepseek.com 掲載の公式 API ホスト。2026-07-21 追加)
+  if (host === "api.deepseek.com" || host.endsWith(".deepseek.com")) return "deepseek";
+  // DashScope(Alibaba Model Studio)の OpenAI 互換ホスト(2026-08-05 追加。
+  // 国際版 dashscope-intl / 中国版 dashscope、および qwencloud.com 系)
+  // ⚠ *.aliyuncs.com 全域は Alibaba Cloud 全サービスを含むため広すぎる。
+  //    公式 Base URL 一覧(alibabacloud.com/help/en/model-studio/base-url、
+  //    2026-08-05 実照合)に載る形だけを許可する:
+  //    dashscope[-intl|-us].aliyuncs.com / <region>.dashscope.aliyuncs.com /
+  //    coding-intl.dashscope.aliyuncs.com / {ws}.{region}.maas.aliyuncs.com /
+  //    trial.{region}.maas.aliyuncs.com。OSS 等の非 DashScope ホストは対象外
+  if (
+    host === "dashscope.aliyuncs.com" ||
+    host === "dashscope-intl.aliyuncs.com" ||
+    host === "dashscope-us.aliyuncs.com" ||
+    host.endsWith(".dashscope.aliyuncs.com") ||
+    (host.startsWith("dashscope") && host.endsWith(".aliyuncs.com")) ||
+    host.endsWith(".maas.aliyuncs.com") ||
+    host === "api.qwencloud.com" ||
+    host.endsWith(".qwencloud.com")
+  ) {
+    return "alibaba";
+  }
+  return "openai";
 }
 
 /**
@@ -881,7 +951,7 @@ async function drainRecordingStream(gen: AsyncIterable<unknown>): Promise<void> 
   }
 }
 
-function wrapOpenAIChat(client: object, recorder: Recorder, config: ArgosvixConfig): void {
+function wrapOpenAIChat(client: object, recorder: Recorder, config: ArgosvixConfig, compatProvider: Provider = "openai"): void {
   const c = client as unknown as OpenAIChatLike;
   const originalCreate = c.chat.completions.create.bind(c.chat.completions);
   warnIfGatedStreamHelper(
@@ -893,7 +963,7 @@ function wrapOpenAIChat(client: object, recorder: Recorder, config: ArgosvixConf
   c.chat.completions.create = function (...args: unknown[]): unknown {
     const start = Date.now();
     const requestArgs = (args[0] as OpenAIRequest) || {};
-    const callTags = buildTags(config, "openai", requestArgs);
+    const callTags = buildTags(config, compatProvider, requestArgs);
     const id = generateId();
     const isStream = requestArgs.stream === true;
 
@@ -924,9 +994,15 @@ function wrapOpenAIChat(client: object, recorder: Recorder, config: ArgosvixConf
       const promptTokens = r.usage?.prompt_tokens ?? 0;
       const completionTokens = r.usage?.completion_tokens ?? 0;
       // OpenAI: prompt_tokens is the total including cached tokens; cached is a subset.
-      const cachedReadTokens = r.usage?.prompt_tokens_details?.cached_tokens ?? 0;
+      // Moonshot Kimi (OpenAI-compatible) reports cached tokens at the top level of
+      // usage as `cached_tokens` instead — read both (platform.kimi.ai/docs/api/chat,
+      // verified 2026-07-17, Codex publish blocker).
+      const cachedReadTokens =
+        r.usage?.prompt_tokens_details?.cached_tokens ??
+        (r.usage as { cached_tokens?: number } | undefined)?.cached_tokens ??
+        0;
       const cost = calculateCostWithCache(
-        "openai",
+        compatProvider,
         model,
         promptTokens,
         completionTokens,
@@ -935,7 +1011,7 @@ function wrapOpenAIChat(client: object, recorder: Recorder, config: ArgosvixConf
       );
       const record: LlmCallRecord = {
         id,
-        provider: "openai",
+        provider: compatProvider,
         model,
         promptTokens,
         completionTokens,
@@ -969,7 +1045,7 @@ function wrapOpenAIChat(client: object, recorder: Recorder, config: ArgosvixConf
         const errorDetails = extractErrorDetails(err);
         recorder.record({
           id,
-          provider: "openai",
+          provider: compatProvider,
           model: requestArgs.model || "unknown",
           promptTokens: 0,
           completionTokens: 0,
@@ -1046,6 +1122,7 @@ function wrapOpenAIChat(client: object, recorder: Recorder, config: ArgosvixConf
         requestArgs,
         start,
         id,
+        compatProvider,
         callTags,
         traceMeta,
         usageInjected,
@@ -1103,6 +1180,8 @@ async function* wrapOpenAIStream(
   requestArgs: OpenAIRequest,
   start: number,
   id: string,
+  // OpenAI 互換の実プロバイダー(xai / moonshot / openai)。2026-07-17 baseURL 判別
+  compatProvider: Provider,
   // The stream record's userId must come from the callTags resolved at the
   // wrapper entry, not at generator consumption start (eliminates re-reading
   // requestArgs after an await).
@@ -1140,7 +1219,7 @@ async function* wrapOpenAIStream(
     if (recorded) return;
     recorded = true;
     const streamCost = calculateCostWithCache(
-      "openai",
+      compatProvider,
       finalModel,
       promptTokens,
       completionTokens,
@@ -1149,7 +1228,7 @@ async function* wrapOpenAIStream(
     );
     const record: LlmCallRecord = {
       id,
-      provider: "openai",
+      provider: compatProvider,
       model: finalModel,
       promptTokens,
       completionTokens,
@@ -1188,6 +1267,11 @@ async function* wrapOpenAIStream(
         }
         if (typeof chunk.usage.prompt_tokens_details?.cached_tokens === "number") {
           cachedReadTokens = chunk.usage.prompt_tokens_details.cached_tokens;
+        } else if (
+          // Moonshot Kimi 形(top-level cached_tokens)。上の OpenAI 形と同じ意味論
+          typeof (chunk.usage as { cached_tokens?: number }).cached_tokens === "number"
+        ) {
+          cachedReadTokens = (chunk.usage as { cached_tokens: number }).cached_tokens;
         }
       }
       // The trailing usage-only chunk (empty choices) produced by the
@@ -1212,12 +1296,12 @@ async function* wrapOpenAIStream(
     const errorDetails = extractErrorDetails(err);
     const errorRecord: LlmCallRecord = {
       id,
-      provider: "openai",
+      provider: compatProvider,
       model: finalModel,
       promptTokens,
       completionTokens,
       totalTokens: reportedTotal ?? promptTokens + completionTokens,
-      costUsd: calculateCost("openai", finalModel, promptTokens, completionTokens),
+      costUsd: calculateCost(compatProvider, finalModel, promptTokens, completionTokens),
       latencyMs: Date.now() - start,
       timestamp: new Date().toISOString(),
       tags: callTags,
@@ -1284,6 +1368,7 @@ function wrapOpenAIResponses(
   client: object,
   recorder: Recorder,
   config: ArgosvixConfig,
+  compatProvider: Provider = "openai",
 ): void {
   const c = client as unknown as OpenAIResponsesLike;
   const originalCreate = c.responses.create.bind(c.responses);
@@ -1291,7 +1376,7 @@ function wrapOpenAIResponses(
   c.responses.create = function (...args: unknown[]): unknown {
     const start = Date.now();
     const requestArgs = (args[0] as OpenAIResponsesRequest) || {};
-    const callTags = buildTags(config, "openai", requestArgs);
+    const callTags = buildTags(config, compatProvider, requestArgs);
     const id = generateId();
     const isStream = requestArgs.stream === true;
     const traceMeta = buildTraceMeta(config);
@@ -1301,7 +1386,7 @@ function wrapOpenAIResponses(
         const errorDetails = extractErrorDetails(err);
         recorder.record({
           id,
-          provider: "openai",
+          provider: compatProvider,
           model: requestArgs.model || "unknown",
           promptTokens: 0,
           completionTokens: 0,
@@ -1329,7 +1414,7 @@ function wrapOpenAIResponses(
         const completionTokens = response.usage?.output_tokens ?? 0;
         const cachedReadTokens = response.usage?.input_tokens_details?.cached_tokens ?? 0;
         const cost = calculateCostWithCache(
-          "openai",
+          compatProvider,
           model,
           promptTokens,
           completionTokens,
@@ -1338,7 +1423,7 @@ function wrapOpenAIResponses(
         );
         const record: LlmCallRecord = {
           id,
-          provider: "openai",
+          provider: compatProvider,
           model,
           promptTokens,
           completionTokens,
@@ -1422,6 +1507,7 @@ function wrapOpenAIResponses(
         callTags,
         traceMeta,
         capture,
+        compatProvider,
       );
     let transformDone = false;
     let transformedValue: unknown;
@@ -1472,6 +1558,8 @@ async function* wrapOpenAIResponsesStream(
   callTags: Record<string, string>,
   traceMeta: TraceMeta,
   capture: StreamCapture | undefined,
+  // OpenAI 互換の実プロバイダー(2026-07-17 baseURL 判別)
+  compatProvider: Provider = "openai",
 ): AsyncGenerator<unknown> {
   {
     {
@@ -1491,7 +1579,7 @@ async function* wrapOpenAIResponsesStream(
           if (streamError !== undefined) {
             const errRecord: LlmCallRecord = {
               id,
-              provider: "openai",
+              provider: compatProvider,
               model,
               promptTokens: 0,
               completionTokens: 0,
@@ -1512,7 +1600,7 @@ async function* wrapOpenAIResponsesStream(
           const completionTokens = usage?.output_tokens ?? 0;
           const cachedReadTokens = usage?.input_tokens_details?.cached_tokens ?? 0;
           const cost = calculateCostWithCache(
-            "openai",
+            compatProvider,
             model,
             promptTokens,
             completionTokens,
@@ -1521,7 +1609,7 @@ async function* wrapOpenAIResponsesStream(
           );
           const record: LlmCallRecord = {
             id,
-            provider: "openai",
+            provider: compatProvider,
             model,
             promptTokens,
             completionTokens,
@@ -1587,7 +1675,7 @@ async function* wrapOpenAIResponsesStream(
           const errorDetails = extractErrorDetails(err);
           const errorRecord: LlmCallRecord = {
             id,
-            provider: "openai",
+            provider: compatProvider,
             model,
             promptTokens: 0,
             completionTokens: 0,

@@ -236,7 +236,7 @@ describe("full-compat: responses API", () => {
 });
 
 
-describe("full-compat: 回帰ケース", () => {
+describe("full-compat: レビュー指摘の回帰", () => {
   it("identity fast path の asResponse は無傷のまま(実 openai の withResponse が内部で呼ぶため上書き禁止)", async () => {
     const originalAsResponse = async () => ({ status: 200 });
     const apiPromise = makeFakeAPIPromise(chatResponse) as ReturnType<

@@ -11,4 +11,4 @@
  *   3. Verify npm run build && tests pass before committing
  */
 
-export const SDK_VERSION = "0.4.22-alpha.0" as const;
+export const SDK_VERSION = "0.5.13" as const;

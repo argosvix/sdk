@@ -4,6 +4,50 @@ All notable changes to `@argosvix/sdk` are documented in this file.
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and the project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.5.13 (2026-08-28)
+
+- peerDependencies: `@anthropic-ai/sdk` を `^0.120.0` から `>=0.120.0` に、`@google/genai` を `^2.18.0` から `>=2.18.0` に拡大(v1 系 / 新 major の利用者が npm ERESOLVE を踏まないように。wrapper は provider SDK を import しない duck-typing のため構造依存なし)
+- README: 冒頭の状態表記を「Alpha released」から「Live」に更新(表記のみ、機能変更なし)
+
+## 0.5.12 (2026-08-23)
+
+- pricing: GPT-5.6 Sol の値下げを反映(入力 $5→$4 / 出力 $30→$20 / キャッシュ入力 $0.5→$0.4、長文コンテキストは 2x/1.5x 規則のまま $8/$30/$0.8)。公式モデルページ・料金ページの実読で照合。プロモ価格(少なくとも 2026-11-21 まで)である旨は公式に明記
+
+
+## [0.5.11] - 2026-08-05
+
+### Added
+- Alibaba Qwen support (8th provider). `wrap()` detects DashScope hosts
+  (`dashscope.aliyuncs.com` / `dashscope-intl.aliyuncs.com` and other
+  `dashscope*.aliyuncs.com` / `*.dashscope.aliyuncs.com` / `*.maas.aliyuncs.com`
+  subdomains, plus `api.qwencloud.com` and `*.qwencloud.com`) and records with
+  provider "alibaba". Pricing for `qwen3.8-max`: $2 in / $6 out / $0.25
+  implicit-cache read per 1M tokens (single tier across the 1M context window,
+  verified against qwencloud.com on 2026-08-05). Cache-hit input arrives via
+  the OpenAI-compatible `usage.prompt_tokens_details.cached_tokens` and is
+  priced separately.
+- AI SDK middleware maps the `alibaba` / `qwen` / `dashscope` namespaces, and
+  the LangChain callback maps `ChatAlibabaTongyi` / Qwen community wrappers,
+  to provider "alibaba".
+
+## [0.5.10] - 2026-07-31
+
+### Changed
+- Pricing: OpenAI cut GPT-5.6 Luna by 80% and Terra by 20% on 2026-07-30; the
+  built-in pricing table now matches the official page. Luna: $0.20 in / $0.02
+  cached / $1.20 out per 1M (long context $0.40 / $0.04 / $1.80). Terra: $2.00 in /
+  $0.20 cached / $12.00 out per 1M (long context $4.00 / $0.40 / $18.00). Sol and
+  GPT-5.5 are unchanged. Verified against developers.openai.com/api/docs/pricing.
+
+## [0.5.9] - 2026-07-29
+
+### Added
+- `QueryAggregateFilter.tzOffsetMinutes` (TypeScript): typed support for local-day
+  bucketing on `queryAggregate` with `groupBy: "day"` (integer minutes, -840..840,
+  e.g. Tokyo = +540). The backend accepted the field already; this makes it part of
+  the typed SDK surface. Python release 0.5.9 is a lockstep version bump with no
+  functional change (the Python SDK has no query helper).
+
 ## [0.4.7-alpha.0] - 2026-06-27
 
 ### Added
@@ -72,7 +116,7 @@ and the project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [0.4.1-alpha.1] - 2026-06-02
 
 ### Added
-- **PII redaction metadata** on every captured record:
+- **PII redaction metadata** on every captured record (= v1.5 Round D 第1段):
   - `LlmCallRecord.piiRedacted` — `true` when at least one PII match was redacted
     in the prompt body, completion body, or any tool call argument/result.
   - `LlmCallRecord.redactionMetadata` — `Record<string, unknown>` carrying
@@ -115,8 +159,9 @@ and the project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   set, backend stores `session_id` as NULL).
 - Session id format: free-form string up to 128 chars, `[A-Za-z0-9_-]`. Caller is
   free to use UUID / ULID / short slug etc.
-- The backend ingest path has accepted `sessionId` since 2026-05-31, so this
-  release completes session tracking end-to-end across the SDK and backend.
+- Backend ingest path has accepted `sessionId` since 2026-05-31 (migration 0036),
+  so this release is the SDK-side carry that closes the v1.5 "session tracking"
+  end-to-end on the SDK + backend axis.
 
 ## [0.3.0-alpha.2] - 2026-06-02
 

@@ -1,4 +1,5 @@
-export type Provider = "openai" | "anthropic" | "gemini" | "mistral";
+// xai / moonshot = OpenAI 互換 API 経由の実プロバイダー(2026-07-17、baseURL 判別)
+export type Provider = "openai" | "anthropic" | "gemini" | "mistral" | "xai" | "moonshot" | "deepseek" | "alibaba";
 
 export interface ArgosvixConfig {
   /** Argosvix API key used to authenticate ingest POSTs. */
@@ -314,4 +315,26 @@ export interface PricingEntry {
   inputPer1M: number;
   /** USD per 1M output tokens. */
   outputPer1M: number;
+  /**
+   * USD per 1M cached (read) input tokens, when the provider publishes a
+   * per-model cached price that differs from the provider-wide multiplier
+   * (e.g. OpenAI 5.x models read at 10% of input while 4o-era models read at
+   * 50%). When absent, the provider-level CACHE_MULTIPLIERS ratio applies.
+   */
+  cachedInputPer1M?: number;
+  /**
+   * 長文脈の段階単価。⚠ **プロンプトが閾値に到達したら、その要求の全トークン**が
+   * 高い方の単価になる(超えた分だけではない)。x.ai の表記は "requests whose prompt
+   * reaches the listed token threshold are billed at the higher rate for all tokens
+   * in the request"。
+   *
+   * これを持たないモデルは段階が無いか、まだ未対応(低い方で計算する)。
+   */
+  longContext?: {
+    /** この値**以上**のプロンプトで高い段階になる。 */
+    thresholdPromptTokens: number;
+    inputPer1M: number;
+    outputPer1M: number;
+    cachedInputPer1M?: number;
+  };
 }

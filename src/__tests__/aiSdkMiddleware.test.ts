@@ -94,7 +94,25 @@ describe("argosvixMiddleware: wrapGenerate", () => {
     warn.mockRestore();
   });
 
-  it("provider 文字列を 4 種へ正しく寄せる", async () => {
+  it("⚠ baseURL を差し替えただけの経路は openai として記録し、コストは正しく出す", async () => {
+    // createOpenAI({ baseURL: "https://api.x.ai/v1" }) はフレームワーク側が "openai" と
+    // 名乗るので、判別は変わらない(Codex 指摘)。ここで大事なのは、**コストが 0 に
+    // 落ちないこと**。後方互換の単価表に載っていないと 0 の行が積み上がる。
+    const mw = argosvixMiddleware({});
+    await mw.wrapGenerate({
+      model: model("openai.chat", "grok-4.3"),
+      params: {},
+      // ⚠ 閾値(20 万)未満で測る。超えると長文脈の段階が上がって別の話になる
+      doGenerate: async () => ({ usage: { inputTokens: 100_000, outputTokens: 100_000 } }),
+    });
+    const records = await mw.recorder.flush();
+    expect(records[0]?.provider).toBe("openai");
+    expect(records[0]?.model).toBe("grok-4.3");
+    // $1.25/M in + $2.50/M out
+    expect(records[0]?.costUsd).toBeCloseTo(0.375, 6);
+  });
+
+  it("provider 文字列を 7 種へ正しく寄せる", async () => {
     const cases: Array<[string, string]> = [
       ["openai.chat", "openai"],
       ["azure.openai", "openai"],
@@ -102,6 +120,15 @@ describe("argosvixMiddleware: wrapGenerate", () => {
       ["google.generative-ai", "gemini"],
       ["google.vertex", "gemini"],
       ["mistral.chat", "mistral"],
+      // ⚠ AI SDK 本体の provider 実装から読んだ値(名前からの推測ではない)
+      ["xai.chat", "xai"],
+      ["xai.responses", "xai"],
+      ["moonshotai.chat", "moonshot"],
+      ["deepseek.chat", "deepseek"],
+      // Qwen 系 community provider(2026-08-05)
+      ["alibaba.chat", "alibaba"],
+      ["qwen.chat", "alibaba"],
+      ["dashscope.chat", "alibaba"],
     ];
     for (const [raw, expected] of cases) {
       const mw = argosvixMiddleware({});

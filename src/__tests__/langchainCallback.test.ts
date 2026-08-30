@@ -115,6 +115,30 @@ describe("argosvixLangChainHandler", () => {
     expect(typeof r.ttftMs).toBe("number");
   });
 
+  it("xai / deepseek / moonshot も判別する", async () => {
+    // ⚠ 名前空間は langchainjs 本体の lc_namespace から読んだ値
+    //    (libs/providers/langchain-{xai,deepseek}/src)。名前からの推測ではない。
+    const cases: Array<[string, string, string]> = [
+      ["xai", "ChatXAI", "xai"],
+      ["deepseek", "ChatDeepSeek", "deepseek"],
+      ["moonshot", "ChatMoonshot", "moonshot"],
+      // @langchain/community の実クラス(jsdelivr の d.ts で実在確認、2026-08-05)
+      ["alibaba_tongyi", "ChatAlibabaTongyi", "alibaba"],
+      ["qwen", "ChatQwen", "alibaba"],
+    ];
+    for (const [ns, cls, expected] of cases) {
+      const h = argosvixLangChainHandler({});
+      h.handleChatModelStart(serialized("langchain", "chat_models", ns, cls), [], "rp", undefined, {
+        invocation_params: { model: "m" },
+      });
+      h.handleLLMEnd(
+        { generations: [[{ message: { usage_metadata: { input_tokens: 1, output_tokens: 1 } } }]] },
+        "rp",
+      );
+      expect((await h.recorder.flush())[0]?.provider).toBe(expected);
+    }
+  });
+
   it("error 時も record を残す", async () => {
     const h = argosvixLangChainHandler({});
     h.handleChatModelStart(serialized("langchain", "chat_models", "mistralai", "ChatMistralAI"), [], "r5", undefined, {
@@ -128,7 +152,7 @@ describe("argosvixLangChainHandler", () => {
     expect(records[0]?.costUsd).toBe(0);
   });
 
-  it("provider セグメントを 4 種へ寄せる (google_genai → gemini)", async () => {
+  it("provider セグメントを寄せる (google_genai → gemini)", async () => {
     const h = argosvixLangChainHandler({});
     h.handleChatModelStart(serialized("langchain", "chat_models", "google_genai", "ChatGoogleGenerativeAI"), [], "r6", undefined, {
       invocation_params: { model: "gemini-2.0" },

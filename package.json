@@ -1,6 +1,6 @@
 {
   "name": "@argosvix/sdk",
-  "version": "0.4.22-alpha.0",
+  "version": "0.5.13",
   "description": "Drop-in observability wrapper for OpenAI, Anthropic, Gemini, Mistral SDK clients. One-line wrap() = cost / latency / quality records.",
   "keywords": [
     "argosvix",
@@ -54,9 +54,9 @@
     "pack:dry": "npm pack --dry-run"
   },
   "peerDependencies": {
-    "@anthropic-ai/sdk": ">=0.20.0",
+    "@anthropic-ai/sdk": ">=0.120.0",
+    "@google/genai": ">=2.18.0",
     "@google/generative-ai": ">=0.20.0",
-    "@google/genai": ">=2.0.0",
     "@mistralai/mistralai": ">=1.0.0",
     "openai": ">=4.0.0"
   },
@@ -84,6 +84,6 @@
     "@types/node": "^22.19.19",
     "openai": "^4.0.0",
     "typescript": "^5.6.0",
-    "vitest": "^2.1.9"
+    "vitest": "^3.2.6"
   }
 }
