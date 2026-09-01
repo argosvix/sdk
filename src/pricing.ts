@@ -86,6 +86,7 @@ export const PRICING: Record<Provider, Record<string, PricingEntry>> = {
     // Moonshot Kimi K3 fallback (unknown-host OpenAI-compatible calls still arrive as
     // "openai"; primary entry lives under the "moonshot" provider block below)
     "kimi-k3": { inputPer1M: 3.0, outputPer1M: 15.0, cachedInputPer1M: 0.3 },
+    "kimi-k2.7-code": { inputPer1M: 0.95, outputPer1M: 4.0, cachedInputPer1M: 0.19 },
     // Qwen fallback (unknown-host OpenAI-compatible calls; primary entry lives
     // under the "alibaba" provider block below)
     "qwen3.8-max": { inputPer1M: 2.0, outputPer1M: 6.0, cachedInputPer1M: 0.25 },
@@ -176,6 +177,9 @@ export const PRICING: Record<Provider, Record<string, PricingEntry>> = {
   moonshot: {
     // platform.kimi.ai/docs/pricing/chat-k3(2026-07-17 照合)
     "kimi-k3": { inputPer1M: 3.0, outputPer1M: 15.0, cachedInputPer1M: 0.3 },
+    // platform.kimi.ai/docs/pricing/chat-k2.7-code(2026-08-31 照合。cache hit $0.19 /
+    // miss $0.95 / output $4.00、256K、コーディング特化。highspeed 別モデルは未収載)
+    "kimi-k2.7-code": { inputPer1M: 0.95, outputPer1M: 4.0, cachedInputPer1M: 0.19 },
   },
   deepseek: {
     // api-docs.deepseek.com/quick_start/pricing(2026-07-21 照合)。

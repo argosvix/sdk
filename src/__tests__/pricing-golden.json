@@ -60,6 +60,7 @@
    "grok-code-fast-1",
    "grok-code-fast-1-0825",
    "grok-latest",
+   "kimi-k2.7-code",
    "kimi-k3",
    "o1",
    "o1-mini",
@@ -110,6 +111,7 @@
    "grok-latest"
   ],
   "moonshot": [
+   "kimi-k2.7-code",
    "kimi-k3"
   ],
   "deepseek": [
@@ -5724,6 +5726,46 @@
    "cachedWriteTokens": 8000,
    "costUsd": 0.0159,
    "cacheSavingsUsd": 0.0216
+  },
+  {
+   "provider": "openai",
+   "model": "kimi-k2.7-code",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 5000,
+   "cachedWriteTokens": 0,
+   "costUsd": 0.0077,
+   "cacheSavingsUsd": 0.0038
+  },
+  {
+   "provider": "openai",
+   "model": "kimi-k2.7-code",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 0,
+   "cachedWriteTokens": 5000,
+   "costUsd": 0.0115,
+   "cacheSavingsUsd": 0
+  },
+  {
+   "provider": "openai",
+   "model": "kimi-k2.7-code",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 4000,
+   "cachedWriteTokens": 3000,
+   "costUsd": 0.00846,
+   "cacheSavingsUsd": 0.00304
+  },
+  {
+   "provider": "openai",
+   "model": "kimi-k2.7-code",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 8000,
+   "cachedWriteTokens": 8000,
+   "costUsd": 0.00542,
+   "cacheSavingsUsd": 0.00608
   },
   {
    "provider": "openai",
@@ -11364,6 +11406,46 @@
    "cachedWriteTokens": 8000,
    "costUsd": 0.0159,
    "cacheSavingsUsd": 0.0216
+  },
+  {
+   "provider": "moonshot",
+   "model": "kimi-k2.7-code",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 5000,
+   "cachedWriteTokens": 0,
+   "costUsd": 0.0077,
+   "cacheSavingsUsd": 0.0038
+  },
+  {
+   "provider": "moonshot",
+   "model": "kimi-k2.7-code",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 0,
+   "cachedWriteTokens": 5000,
+   "costUsd": 0.0115,
+   "cacheSavingsUsd": 0
+  },
+  {
+   "provider": "moonshot",
+   "model": "kimi-k2.7-code",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 4000,
+   "cachedWriteTokens": 3000,
+   "costUsd": 0.00846,
+   "cacheSavingsUsd": 0.00304
+  },
+  {
+   "provider": "moonshot",
+   "model": "kimi-k2.7-code",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 8000,
+   "cachedWriteTokens": 8000,
+   "costUsd": 0.00542,
+   "cacheSavingsUsd": 0.00608
   },
   {
    "provider": "deepseek",

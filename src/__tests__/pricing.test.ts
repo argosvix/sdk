@@ -220,20 +220,16 @@ describe("calculateCostWithCache", () => {
   });
 });
 
-// 単価改定の期日ガード(Codex 2026-07-12 major 対応)。コメント頼みの「9/1 に更新」を
-// 期日超過で必ず落ちるテストに変える。改定当日以降にこのテストが落ちたら、
-// PRICING の claude-sonnet-5 を公式の標準料金($3/$15)へ更新してから期待値側を直す。
+// claude-sonnet-5 の単価。当初は「$2/$10 は 8/31 までの導入価格、9/1 に $3/$15 へ」の
+// 予定だったが、2026-09-01 に Anthropic が値上げ撤回を公式発表(platform.claude.com の
+// pricing 注記 = 導入価格がそのまま標準価格に、9/1 の $3/$15 への引き上げは行わない)。
+// よって $2/$10 が恒久の標準価格。撤回確認済みのため固定期待値に戻した。
 describe("pricing revision reminders", () => {
-  it("claude-sonnet-5 の導入価格($2/$10)は 2026-09-01 に標準料金($3/$15)へ更新する", () => {
+  it("claude-sonnet-5 は $2/$10(2026-09-01 に値上げ撤回が公式発表され恒久化)", () => {
     const entry = PRICING.anthropic["claude-sonnet-5"];
     expect(entry).toBeDefined();
-    if (Date.now() >= Date.UTC(2026, 8, 1)) {
-      expect(entry.inputPer1M).toBe(3.0);
-      expect(entry.outputPer1M).toBe(15.0);
-    } else {
-      expect(entry.inputPer1M).toBe(2.0);
-      expect(entry.outputPer1M).toBe(10.0);
-    }
+    expect(entry.inputPer1M).toBe(2.0);
+    expect(entry.outputPer1M).toBe(10.0);
   });
 });
 
