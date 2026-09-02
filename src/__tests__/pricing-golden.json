@@ -135,8 +135,10 @@
    "claude-3-opus",
    "claude-3-sonnet",
    "claude-fable-5",
+   "claude-fable-5-1",
    "claude-haiku-4-5",
    "claude-mythos-5",
+   "claude-mythos-5-1",
    "claude-opus-4",
    "claude-opus-4-1",
    "claude-opus-4-1-20250805",
@@ -11686,6 +11688,86 @@
    "cachedWriteTokens": 8000,
    "costUsd": 0.000683,
    "cacheSavingsUsd": 0.001152
+  },
+  {
+   "provider": "anthropic",
+   "model": "claude-fable-5-1",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 5000,
+   "cachedWriteTokens": 0,
+   "costUsd": 0.07625,
+   "cacheSavingsUsd": 0.04875
+  },
+  {
+   "provider": "anthropic",
+   "model": "claude-fable-5-1",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 0,
+   "cachedWriteTokens": 5000,
+   "costUsd": 0.1375,
+   "cacheSavingsUsd": 0
+  },
+  {
+   "provider": "anthropic",
+   "model": "claude-fable-5-1",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 4000,
+   "cachedWriteTokens": 3000,
+   "costUsd": 0.0935,
+   "cacheSavingsUsd": 0.039
+  },
+  {
+   "provider": "anthropic",
+   "model": "claude-fable-5-1",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 8000,
+   "cachedWriteTokens": 8000,
+   "costUsd": 0.052,
+   "cacheSavingsUsd": 0.078
+  },
+  {
+   "provider": "anthropic",
+   "model": "claude-mythos-5-1",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 5000,
+   "cachedWriteTokens": 0,
+   "costUsd": 0.07625,
+   "cacheSavingsUsd": 0.04875
+  },
+  {
+   "provider": "anthropic",
+   "model": "claude-mythos-5-1",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 0,
+   "cachedWriteTokens": 5000,
+   "costUsd": 0.1375,
+   "cacheSavingsUsd": 0
+  },
+  {
+   "provider": "anthropic",
+   "model": "claude-mythos-5-1",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 4000,
+   "cachedWriteTokens": 3000,
+   "costUsd": 0.0935,
+   "cacheSavingsUsd": 0.039
+  },
+  {
+   "provider": "anthropic",
+   "model": "claude-mythos-5-1",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 8000,
+   "cachedWriteTokens": 8000,
+   "costUsd": 0.052,
+   "cacheSavingsUsd": 0.078
   },
   {
    "provider": "anthropic",

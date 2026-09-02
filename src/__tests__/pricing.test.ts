@@ -263,6 +263,41 @@ describe("claude-opus-5 pricing (2026-07-24)", () => {
   });
 });
 
+describe("claude-fable-5-1 / mythos-5-1 の単価(2026-09-01 リリース)", () => {
+  // 入出力は Fable 5 と同額($10/$50)だが、キャッシュ読みだけ $0.25 = 入力の 0.025 倍。
+  // 提供元一律の 0.1 倍(CACHE_MULTIPLIERS.anthropic)では表せないので per-model で持つ。
+  it("uncached cost equals Fable 5", () => {
+    expect(calculateCost("anthropic", "claude-fable-5-1", 1_000_000, 100_000)).toBeCloseTo(15.0, 6);
+    expect(calculateCost("anthropic", "claude-fable-5", 1_000_000, 100_000)).toBeCloseTo(15.0, 6);
+  });
+  it("cache read is billed at $0.25/1M, not the provider-wide 10%", () => {
+    // 100 万トークン全部がキャッシュ読み → $0.25。Fable 5 なら $1.00。
+    const v51 = calculateCostWithCache("anthropic", "claude-fable-5-1", 1_000_000, 0, 1_000_000, 0);
+    expect(v51.costUsd).toBeCloseTo(0.25, 6);
+    expect(v51.cacheSavingsUsd).toBeCloseTo(9.75, 6);
+    const v5 = calculateCostWithCache("anthropic", "claude-fable-5", 1_000_000, 0, 1_000_000, 0);
+    expect(v5.costUsd).toBeCloseTo(1.0, 6);
+  });
+  it("cache write still uses the provider-wide 125%", () => {
+    const r = calculateCostWithCache("anthropic", "claude-fable-5-1", 1_000_000, 0, 0, 1_000_000);
+    expect(r.costUsd).toBeCloseTo(12.5, 6);
+  });
+  it("mythos-5-1 shares the same table row", () => {
+    const a = calculateCostWithCache("anthropic", "claude-mythos-5-1", 500_000, 10_000, 400_000, 0);
+    const b = calculateCostWithCache("anthropic", "claude-fable-5-1", 500_000, 10_000, 400_000, 0);
+    expect(a).toEqual(b);
+  });
+  // 明示キーが無いと前方一致で claude-fable-5 に吸われ、キャッシュ読みが 4 倍に出る。
+  // 日付つき派生は 5-1 側(より長い既知 key)に解決することを固定する。
+  it("dated variant resolves to 5-1, not to the shorter fable-5 key", () => {
+    const dated = calculateCostWithCache("anthropic", "claude-fable-5-1-20260901", 1_000_000, 0, 1_000_000, 0);
+    expect(dated.costUsd).toBeCloseTo(0.25, 6);
+  });
+  it("feature variant is fail-closed", () => {
+    expect(calculateCost("anthropic", "claude-fable-5-1-audio-preview", 1_000_000, 100_000)).toBe(0);
+  });
+});
+
 describe("xAI の単価(2026-07-26 publish ゲートで見つかった穴)", () => {
   it("⚠ 「-latest」の別名を、同じ系列の単価で計算する", () => {
     // 各社が使う別名。剥がさないと、別名で呼んだ利用者だけコスト 0 の行になる。

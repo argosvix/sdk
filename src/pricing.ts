@@ -203,9 +203,16 @@ export const PRICING: Record<Provider, Record<string, PricingEntry>> = {
   },
   anthropic: {
     // Claude 5 series
+    // Fable 5.1 / Mythos 5.1(2026-09-01 リリース、platform.claude.com/docs/en/about-claude/pricing
+    // で 2026-09-02 照合)。入出力は Fable 5 と同額だがキャッシュ読みだけ $0.25 = 入力の
+    // 0.025 倍(他モデルは 0.1 倍)。提供元一律の CACHE_MULTIPLIERS では表せないため
+    // per-model の cachedInputPer1M で持つ。⚠ この明示キーが無いと前方一致で
+    // claude-fable-5 に吸われ、キャッシュ読みが 4 倍($1)に見積もられる
+    "claude-fable-5-1": { inputPer1M: 10.0, outputPer1M: 50.0, cachedInputPer1M: 0.25 },
+    "claude-mythos-5-1": { inputPer1M: 10.0, outputPer1M: 50.0, cachedInputPer1M: 0.25 },
     "claude-fable-5": { inputPer1M: 10.0, outputPer1M: 50.0 },
-    // ⚠ Sonnet 5 introductory pricing ($2/$10) runs through 2026-08-31;
-    //   the official standard rate becomes $3/$15 on 2026-09-01 — update then.
+    // Sonnet 5 の $2/$10 は導入価格として告知されたが、2026-09-01 予定だった $3/$15 への
+    // 改定は公式に撤回され恒久の標準価格になった(pricing ページの注記、2026-09-02 照合)
     "claude-sonnet-5": { inputPer1M: 2.0, outputPer1M: 10.0 },
     "claude-mythos-5": { inputPer1M: 10.0, outputPer1M: 50.0 },
     // Opus 5(2026-07-24 リリース。単価は Opus 4.8 と同額 $5/$25)
@@ -321,6 +328,8 @@ export const PRICING: Record<Provider, Record<string, PricingEntry>> = {
  *     default). Note: 1-hour-TTL writes cost 200%, but we lack a token
  *     breakdown column, so we bill at the default 5-minute rate of 125%
  *     (write cost is slightly underestimated only when the 1h cache is used).
+ *     Exception: Fable 5.1 / Mythos 5.1 read at 2.5% (verified 2026-09-02),
+ *     carried per entry as cachedInputPer1M so the per-model price wins below.
  *   - Gemini context cache: reads at 10% (revised from 25% to 10% in 2026-06,
  *     officially verified)
  *   - Mistral: no cache pricing
