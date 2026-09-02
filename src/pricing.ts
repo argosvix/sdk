@@ -246,6 +246,11 @@ export const PRICING: Record<Provider, Record<string, PricingEntry>> = {
   },
   gemini: {
     // Gemini 3 series (GA 2026-05-19; verified against ai.google.dev/pricing)
+    // 3.8-flash = API 提供開始 2026-09-02(公式単価表で 2026-09-03 照合)。
+    // ⚠ 導入価格: $0.75 / $3.75 は 2026-12-31 まで、**2027-01-01 から $1.50 / $7.50**
+    //    (キャッシュ読み $0.075 → $0.15。倍率 0.1 は提供元一律のまま)。期日超過を
+    //    テストが知らせる(pricing.test.ts の時限リマインダー、Python 側も同型)
+    "gemini-3.8-flash": { inputPer1M: 0.75, outputPer1M: 3.75 },
     // 3.6-flash / 3.5-flash-lite = API 提供開始 2026-07-21(公式単価表で 2026-07-22 照合)
     "gemini-3.6-flash": { inputPer1M: 1.5, outputPer1M: 7.5 },
     "gemini-3.5-flash-lite": { inputPer1M: 0.3, outputPer1M: 2.5 },

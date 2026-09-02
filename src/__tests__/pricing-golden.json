@@ -165,7 +165,8 @@
    "gemini-3.1-pro",
    "gemini-3.5-flash",
    "gemini-3.5-flash-lite",
-   "gemini-3.6-flash"
+   "gemini-3.6-flash",
+   "gemini-3.8-flash"
   ]
  },
  "rows": [
@@ -12808,6 +12809,46 @@
    "cachedWriteTokens": 8000,
    "costUsd": 0.00145,
    "cacheSavingsUsd": 0.0018
+  },
+  {
+   "provider": "gemini",
+   "model": "gemini-3.8-flash",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 5000,
+   "cachedWriteTokens": 0,
+   "costUsd": 0.006,
+   "cacheSavingsUsd": 0.003375
+  },
+  {
+   "provider": "gemini",
+   "model": "gemini-3.8-flash",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 0,
+   "cachedWriteTokens": 5000,
+   "costUsd": 0.009375,
+   "cacheSavingsUsd": 0
+  },
+  {
+   "provider": "gemini",
+   "model": "gemini-3.8-flash",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 4000,
+   "cachedWriteTokens": 3000,
+   "costUsd": 0.006675,
+   "cacheSavingsUsd": 0.0027
+  },
+  {
+   "provider": "gemini",
+   "model": "gemini-3.8-flash",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 8000,
+   "cachedWriteTokens": 8000,
+   "costUsd": 0.003975,
+   "cacheSavingsUsd": 0.0054
   },
   {
    "provider": "gemini",

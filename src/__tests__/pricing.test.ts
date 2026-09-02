@@ -231,6 +231,43 @@ describe("pricing revision reminders", () => {
     expect(entry.inputPer1M).toBe(2.0);
     expect(entry.outputPer1M).toBe(10.0);
   });
+
+  // Gemini 3.8 Flash(2026-09-02 リリース)の導入価格。公式単価表の表記は
+  // "$0.75 through December 31, 2026. $1.50 starting January 1, 2027."(出力 3.75 → 7.50)。
+  // 2027-01-01 以降にこのテストが落ちたら、PRICING と official-pricing-oracle.json を
+  // 公式の新単価へ更新してから期待値側を直す。⚠ Python 側にも同型のテストがある
+  // (test_pricing.py)。片方だけ直すと翌日に片方が落ちる(Sonnet 5 で 2026-09-02 に実際に起きた)
+  it("gemini-3.8-flash の導入価格($0.75/$3.75)は 2027-01-01 に $1.50/$7.50 へ更新する", () => {
+    const entry = PRICING.gemini["gemini-3.8-flash"];
+    expect(entry).toBeDefined();
+    if (Date.now() >= Date.UTC(2027, 0, 1)) {
+      expect(entry.inputPer1M).toBe(1.5);
+      expect(entry.outputPer1M).toBe(7.5);
+    } else {
+      expect(entry.inputPer1M).toBe(0.75);
+      expect(entry.outputPer1M).toBe(3.75);
+    }
+  });
+});
+
+describe("gemini-3.8-flash の単価(2026-09-02 リリース)", () => {
+  it("3.5 Flash の入力半額・出力 41.7%", () => {
+    const v38 = calculateCost("gemini", "gemini-3.8-flash", 1_000_000, 1_000_000);
+    const v35 = calculateCost("gemini", "gemini-3.5-flash", 1_000_000, 1_000_000);
+    expect(v38).toBeCloseTo(4.5, 6);
+    expect(v35).toBeCloseTo(10.5, 6);
+  });
+  it("cache read follows the provider-wide 10% (= official $0.075/1M)", () => {
+    const r = calculateCostWithCache("gemini", "gemini-3.8-flash", 1_000_000, 0, 1_000_000, 0);
+    expect(r.costUsd).toBeCloseTo(0.075, 6);
+    expect(r.cacheSavingsUsd).toBeCloseTo(0.675, 6);
+  });
+  // 前方一致の規則: 日付つき派生は拾い、機能派生(-cyber = Fairwind 審査制、公式単価なし)は
+  // fail-closed。cyber を 3.8-flash の単価で黙って見積もらない
+  it("dated variant resolves, feature variant is fail-closed", () => {
+    expect(calculateCost("gemini", "gemini-3.8-flash-001", 1_000_000, 1_000_000)).toBeCloseTo(4.5, 6);
+    expect(calculateCost("gemini", "gemini-3.8-flash-cyber", 1_000_000, 1_000_000)).toBe(0);
+  });
 });
 
 // Opus 5(2026-07-24 リリース)の回帰。publish ゲートで Codex が
