@@ -129,6 +129,8 @@ describe("argosvixMiddleware: wrapGenerate", () => {
       ["alibaba.chat", "alibaba"],
       ["qwen.chat", "alibaba"],
       ["dashscope.chat", "alibaba"],
+      // Meta Model API は createOpenAICompatible({ name: "meta" }) 経由(2026-09-03)
+      ["meta.chat", "meta"],
     ];
     for (const [raw, expected] of cases) {
       const mw = argosvixMiddleware({});

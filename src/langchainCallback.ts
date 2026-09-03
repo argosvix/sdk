@@ -148,6 +148,14 @@ function mapProvider(llm: LcSerialized | undefined): Provider | null {
   if (has("alibaba", "dashscope", "qwen") || cls.includes("alibabatongyi") || cls.includes("qwen")) {
     return "alibaba";
   }
+  // Meta Model API: no first-party langchain package (dev.meta.ai/docs tells users
+  // to point ChatOpenAI at api.meta.ai, which lands on the "openai" branch above
+  // like the other OpenAI-compatible hosts). Community wrappers are matched on
+  // exact "meta" / "meta_ai" segments; "meta" is not used as a class-name
+  // substring because it would swallow unrelated names (…Metadata…).
+  if (has("meta", "meta_ai", "metaai") || cls.includes("chatmeta") || cls.includes("musespark")) {
+    return "meta";
+  }
   return null;
 }
 
@@ -216,7 +224,7 @@ function warnUnsupported(llm: LcSerialized | undefined): void {
   warnedUnsupported.add(label);
   // eslint-disable-next-line no-console
   console.warn(
-    `[argosvix] LangChain model "${label}" is not one of openai/anthropic/gemini/mistral/xai/moonshot/deepseek/alibaba; ` +
+    `[argosvix] LangChain model "${label}" is not one of openai/anthropic/gemini/mistral/xai/moonshot/deepseek/alibaba/meta; ` +
       `the call runs normally but is not recorded. Pass config.provider to override.`,
   );
 }

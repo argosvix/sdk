@@ -125,6 +125,10 @@ describe("argosvixLangChainHandler", () => {
       // @langchain/community の実クラス(jsdelivr の d.ts で実在確認、2026-08-05)
       ["alibaba_tongyi", "ChatAlibabaTongyi", "alibaba"],
       ["qwen", "ChatQwen", "alibaba"],
+      // Meta Model API は公式 langchain パッケージ無し(2026-09-03)。community wrapper の
+      // 想定形。ChatOpenAI + baseURL=api.meta.ai は上の openai 分岐に落ちる(他の互換ホストと同じ)
+      ["meta", "ChatMeta", "meta"],
+      ["meta_ai", "ChatMuseSpark", "meta"],
     ];
     for (const [ns, cls, expected] of cases) {
       const h = argosvixLangChainHandler({});
@@ -137,6 +141,18 @@ describe("argosvixLangChainHandler", () => {
       );
       expect((await h.recorder.flush())[0]?.provider).toBe(expected);
     }
+
+    // ⚠ negative: "meta" は class 名の部分一致には使わない(…Metadata… を巻き込む)。
+    //    判別不能 = 記録しない(既存の null 戻りと同じ)
+    const h = argosvixLangChainHandler({});
+    h.handleChatModelStart(serialized("langchain", "chat_models", "custom", "ChatWithMetadata"), [], "rn", undefined, {
+      invocation_params: { model: "m" },
+    });
+    h.handleLLMEnd(
+      { generations: [[{ message: { usage_metadata: { input_tokens: 1, output_tokens: 1 } } }]] },
+      "rn",
+    );
+    expect(await h.recorder.flush()).toHaveLength(0);
   });
 
   it("error 時も record を残す", async () => {

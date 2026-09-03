@@ -91,6 +91,13 @@ export const PRICING: Record<Provider, Record<string, PricingEntry>> = {
     // under the "alibaba" provider block below)
     "qwen3.8-max": { inputPer1M: 2.0, outputPer1M: 6.0, cachedInputPer1M: 0.25 },
     "qwen3.8-flash": { inputPer1M: 0.16, outputPer1M: 0.47, cachedInputPer1M: 0.016 },
+    // Meta Muse Spark fallback (unknown-host OpenAI-compatible calls; primary
+    // entries live under the "meta" provider block below)
+    "muse-spark-1.3": { inputPer1M: 1.25, outputPer1M: 4.25, cachedInputPer1M: 0.15 },
+    "muse-spark-1.2": { inputPer1M: 1.25, outputPer1M: 4.25, cachedInputPer1M: 0.15 },
+    "muse-spark-1.1": { inputPer1M: 1.25, outputPer1M: 4.25, cachedInputPer1M: 0.15 },
+    "muse-spark-1.3-contributor": { inputPer1M: 0.1, outputPer1M: 0.2, cachedInputPer1M: 0.002 },
+    "muse-spark-1.2-contributor": { inputPer1M: 0.1, outputPer1M: 0.2, cachedInputPer1M: 0.002 },
     // Z.ai GLM-5.3-Flash(docs.z.ai/guides/overview/pricing、2026-08-27 照合)。
     // 標準単価を採る。2026-09-09 24:00 UTC+8 まで半額プロモ($0.075/$0.25)が
     // 走っているが期限付きのため表には載せない。z.ai の baseURL 判別は未対応なので
@@ -200,6 +207,20 @@ export const PRICING: Record<Provider, Record<string, PricingEntry>> = {
     // implicit cache の読み単価 $0.016。明示キャッシュ(作成 $0.2 / 読み $0.016)は
     // usage に乗らないため対象外
     "qwen3.8-flash": { inputPer1M: 0.16, outputPer1M: 0.47, cachedInputPer1M: 0.016 },
+  },
+  meta: {
+    // Meta Model API(api.meta.ai/v1、OpenAI 互換)。dev.meta.ai/docs/pricing-rate-limits
+    // と developer.meta.com/ai/models/muse-spark で 2026-09-03 照合。
+    // 標準 = $1.25 / $4.25、キャッシュ読み $0.15。1,048,576 の窓全域で単一単価
+    // (公式に "no long-context premium")。キャッシュ書き込み課金・バッチ単価は無い。
+    // Contributor 版(応答を学習に提供する代わりに約 1/12)は別モデル ID で、
+    // キャッシュ読みの比率が標準(0.12)と違う(0.02)ため per-model の cachedInputPer1M で持つ。
+    // ⚠ "-contributor" は前方一致(キー + "-" + 数字)に当たらないので明示キーが要る
+    "muse-spark-1.3": { inputPer1M: 1.25, outputPer1M: 4.25, cachedInputPer1M: 0.15 },
+    "muse-spark-1.2": { inputPer1M: 1.25, outputPer1M: 4.25, cachedInputPer1M: 0.15 },
+    "muse-spark-1.1": { inputPer1M: 1.25, outputPer1M: 4.25, cachedInputPer1M: 0.15 },
+    "muse-spark-1.3-contributor": { inputPer1M: 0.1, outputPer1M: 0.2, cachedInputPer1M: 0.002 },
+    "muse-spark-1.2-contributor": { inputPer1M: 0.1, outputPer1M: 0.2, cachedInputPer1M: 0.002 },
   },
   anthropic: {
     // Claude 5 series
@@ -352,6 +373,8 @@ const CACHE_MULTIPLIERS: Record<Provider, { read: number; write: number }> = {
   deepseek: { read: 1.0, write: 1.0 },
   // alibaba(Qwen)も per-model の cachedInputPer1M(implicit cache の読み単価)を持つ
   alibaba: { read: 1.0, write: 1.0 },
+  // meta(Muse Spark)も per-model の cachedInputPer1M を持つ(標準 0.12 / contributor 0.02 で比率が違う)
+  meta: { read: 1.0, write: 1.0 },
 };
 
 /**

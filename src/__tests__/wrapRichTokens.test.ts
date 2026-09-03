@@ -149,6 +149,64 @@ describe("リッチなトークン / TTFT(OpenAI)", () => {
     expect(ossRec?.costUsd).toBeCloseTo(8.0, 6);
   });
 
+  it("baseURL が api.meta.ai なら meta、それ以外の meta.ai / meta.com は openai のまま(2026-09-03)", async () => {
+    const make = (baseURL: string, model: string, cached = 0) => ({
+      baseURL,
+      chat: {
+        completions: {
+          create: vi.fn(async () => ({
+            model,
+            usage: {
+              prompt_tokens: 1_000_000,
+              completion_tokens: 1_000_000,
+              total_tokens: 2_000_000,
+              // Meta Model API は OpenAI 互換なので cached_tokens も同じ形
+              prompt_tokens_details: { cached_tokens: cached },
+            },
+            choices: [{ message: { content: "x" } }],
+          })),
+        },
+      },
+    });
+    // 標準: 入力 1M × $1.25 + 出力 1M × $4.25(dev.meta.ai/docs/pricing-rate-limits)
+    const std = wrap(make("https://api.meta.ai/v1", "muse-spark-1.3"));
+    await std.chat.completions.create({ model: "muse-spark-1.3", messages: [] });
+    const stdRec = (await getRecorder(std)!.flush())[0];
+    expect(stdRec?.provider).toBe("meta");
+    expect(stdRec?.costUsd).toBeCloseTo(5.5, 6);
+
+    // キャッシュ読み 50 万 = 非キャッシュ 500k × $1.25/1M + キャッシュ 500k × $0.15/1M + 出力 $4.25
+    const cachedStd = wrap(make("https://api.meta.ai/v1", "muse-spark-1.3", 500_000));
+    await cachedStd.chat.completions.create({ model: "muse-spark-1.3", messages: [] });
+    const cachedStdRec = (await getRecorder(cachedStd)!.flush())[0];
+    expect(cachedStdRec?.costUsd).toBeCloseTo(0.625 + 0.075 + 4.25, 6);
+
+    // contributor 版は別 ID で別単価($0.10 / $0.20、キャッシュ $0.002)。
+    // "-contributor" は前方一致(キー + "-" + 数字)に当たらないので明示キーで解決される
+    const contrib = wrap(make("https://api.meta.ai/v1", "muse-spark-1.3-contributor", 500_000));
+    await contrib.chat.completions.create({ model: "muse-spark-1.3-contributor", messages: [] });
+    const contribRec = (await getRecorder(contrib)!.flush())[0];
+    expect(contribRec?.provider).toBe("meta");
+    expect(contribRec?.costUsd).toBeCloseTo(0.05 + 0.001 + 0.2, 6);
+
+    // 日付つき派生名は前方一致で 1.3 の単価に落ちる
+    const dated = wrap(make("https://api.meta.ai/v1", "muse-spark-1.3-2026-08-15"));
+    await dated.chat.completions.create({ model: "muse-spark-1.3-2026-08-15", messages: [] });
+    const datedRec = (await getRecorder(dated)!.flush())[0];
+    expect(datedRec?.costUsd).toBeCloseTo(5.5, 6);
+
+    // ⚠ negative: meta.ai は消費者向け Meta AI と同じドメインなので、公式 Base URL に
+    //    載らないホスト(www.meta.ai / graph.facebook.com / *.meta.com)は meta にしない
+    for (const h of ["https://www.meta.ai/v1", "https://graph.facebook.com/v1", "https://api.meta.com/v1"]) {
+      const c = wrap(make(h, "muse-spark-1.3"));
+      await c.chat.completions.create({ model: "muse-spark-1.3", messages: [] });
+      const rec = (await getRecorder(c)!.flush())[0];
+      expect(rec?.provider, h).toBe("openai");
+      // openai fallback ブロックにも muse-spark があるため計算は成立する
+      expect(rec?.costUsd, h).toBeCloseTo(5.5, 6);
+    }
+  });
+
   it("config.provider の明示指定(moonshot / xai)でも wrap が成立し実プロバイダーで記録する", async () => {
     // Codex 2026-07-17 blocker 1: 明示指定が switch に case を持たず wrap 未適用に
     // なっていた回帰の防御ゲート(baseURL なしでも明示指定で記録できること)

@@ -13,7 +13,7 @@ import { Recorder } from "./recorder.js";
  * made through the AI SDK — `generateText` / `streamText` / `generateObject`
  * and so on — become observable without wrap()ing the provider SDK directly.
  * In other words: yes, calls originating inside the AI SDK are recorded too,
- * for the four supported providers.
+ * for every supported provider (the namespaces listed in mapProvider below).
  *
  * There is no hard dependency on the AI SDK (types are defined structurally;
  * `ai` is never imported). The middleware shape (wrapGenerate / wrapStream) is
@@ -128,8 +128,8 @@ type TraceMeta = Pick<LlmCallRecord, "traceId" | "spanId" | "parentSpanId" | "se
 /**
  * Maps the AI SDK's provider string (e.g. "openai.chat" /
  * "anthropic.messages" / "google.generative-ai" / "mistral.chat" /
- * "xai.chat" / "moonshotai.chat" / "deepseek.chat") onto Argosvix's
- * seven providers.
+ * "xai.chat" / "moonshotai.chat" / "deepseek.chat" / "alibaba.chat" /
+ * "meta.chat") onto Argosvix's nine providers.
  *
  * The xai / moonshotai / deepseek namespaces were read from the AI SDK's own
  * provider sources (packages/{xai,moonshotai,deepseek}/src/*-provider.ts on
@@ -157,6 +157,11 @@ function mapProvider(raw: string | undefined): Provider | null {
   if (ns === "deepseek") return "deepseek";
   // Qwen 系 community provider は "qwen" / "alibaba" 名義の両方が流通している
   if (ns === "alibaba" || ns === "qwen" || ns === "dashscope") return "alibaba";
+  // Meta Model API に公式 @ai-sdk パッケージは無く(2026-09-03 時点)、
+  // createOpenAICompatible({ name: "meta", baseURL: "https://api.meta.ai/v1" })
+  // の name がそのまま namespace になる。AI Gateway 経由("gateway" namespace +
+  // modelId "meta/muse-spark-*")はここでは拾わない = 他 provider と同じく config.provider で上書き
+  if (ns === "meta") return "meta";
   return null;
 }
 
@@ -169,7 +174,7 @@ function warnUnsupportedProvider(raw: string | undefined): void {
   // eslint-disable-next-line no-console
   console.warn(
     `[argosvix] AI SDK provider "${label}" is not one of ` +
-      `openai/anthropic/gemini/mistral/xai/moonshot/deepseek/alibaba; ` +
+      `openai/anthropic/gemini/mistral/xai/moonshot/deepseek/alibaba/meta; ` +
       `the call runs normally but is not recorded. Pass config.provider to override.`,
   );
 }

@@ -48,6 +48,7 @@ export function wrap<T extends object>(client: T, config: ArgosvixConfig = {}): 
     case "moonshot":
     case "deepseek":
     case "alibaba":
+    case "meta":
     case "openai": {
       // 明示指定(xai / moonshot / openai)はそれを尊重、無指定なら baseURL 判別
       const compat: Provider =
@@ -75,7 +76,7 @@ export function wrap<T extends object>(client: T, config: ArgosvixConfig = {}): 
     }
   }
   // Plaintext capture coverage (streaming support added 2026-07): in addition to
-  // the non-streaming success path of all 4 providers, promptBody / completionBody
+  // the non-streaming success path of every provider, promptBody / completionBody
   // are also extracted on the streaming paths that have an existing stream wrapper
   // (OpenAI Chat / Anthropic / Mistral / Gemini legacy + new SDK). OpenAI Responses
   // streaming has no stream wrapper yet, so plaintext capture is unsupported there too.
@@ -182,6 +183,10 @@ function resolveOpenAICompatProvider(client: object): Provider {
   ) {
     return "alibaba";
   }
+  // Meta Model API(dev.meta.ai/docs 掲載の公式 Base URL = https://api.meta.ai/v1、
+  // 2026-09-03 追加)。meta.ai は消費者向け Meta AI と同じドメインなので
+  // *.meta.ai 全域は取らず、公式に載る api.meta.ai だけを許可する
+  if (host === "api.meta.ai") return "meta";
   return "openai";
 }
 

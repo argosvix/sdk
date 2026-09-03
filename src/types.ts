@@ -1,5 +1,5 @@
 // xai / moonshot = OpenAI 互換 API 経由の実プロバイダー(2026-07-17、baseURL 判別)
-export type Provider = "openai" | "anthropic" | "gemini" | "mistral" | "xai" | "moonshot" | "deepseek" | "alibaba";
+export type Provider = "openai" | "anthropic" | "gemini" | "mistral" | "xai" | "moonshot" | "deepseek" | "alibaba" | "meta";
 
 export interface ArgosvixConfig {
   /** Argosvix API key used to authenticate ingest POSTs. */

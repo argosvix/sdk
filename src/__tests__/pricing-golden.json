@@ -62,6 +62,11 @@
    "grok-latest",
    "kimi-k2.7-code",
    "kimi-k3",
+   "muse-spark-1.1",
+   "muse-spark-1.2",
+   "muse-spark-1.2-contributor",
+   "muse-spark-1.3",
+   "muse-spark-1.3-contributor",
    "o1",
    "o1-mini",
    "qwen3.8-flash",
@@ -123,6 +128,13 @@
   "alibaba": [
    "qwen3.8-flash",
    "qwen3.8-max"
+  ],
+  "meta": [
+   "muse-spark-1.1",
+   "muse-spark-1.2",
+   "muse-spark-1.2-contributor",
+   "muse-spark-1.3",
+   "muse-spark-1.3-contributor"
   ],
   "anthropic": [
    "claude-3-5-haiku",
@@ -5849,6 +5861,206 @@
    "cachedWriteTokens": 8000,
    "costUsd": 0.000683,
    "cacheSavingsUsd": 0.001152
+  },
+  {
+   "provider": "openai",
+   "model": "muse-spark-1.3",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 5000,
+   "cachedWriteTokens": 0,
+   "costUsd": 0.009125,
+   "cacheSavingsUsd": 0.0055
+  },
+  {
+   "provider": "openai",
+   "model": "muse-spark-1.3",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 0,
+   "cachedWriteTokens": 5000,
+   "costUsd": 0.014625,
+   "cacheSavingsUsd": 0
+  },
+  {
+   "provider": "openai",
+   "model": "muse-spark-1.3",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 4000,
+   "cachedWriteTokens": 3000,
+   "costUsd": 0.010225,
+   "cacheSavingsUsd": 0.0044
+  },
+  {
+   "provider": "openai",
+   "model": "muse-spark-1.3",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 8000,
+   "cachedWriteTokens": 8000,
+   "costUsd": 0.005825,
+   "cacheSavingsUsd": 0.0088
+  },
+  {
+   "provider": "openai",
+   "model": "muse-spark-1.2",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 5000,
+   "cachedWriteTokens": 0,
+   "costUsd": 0.009125,
+   "cacheSavingsUsd": 0.0055
+  },
+  {
+   "provider": "openai",
+   "model": "muse-spark-1.2",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 0,
+   "cachedWriteTokens": 5000,
+   "costUsd": 0.014625,
+   "cacheSavingsUsd": 0
+  },
+  {
+   "provider": "openai",
+   "model": "muse-spark-1.2",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 4000,
+   "cachedWriteTokens": 3000,
+   "costUsd": 0.010225,
+   "cacheSavingsUsd": 0.0044
+  },
+  {
+   "provider": "openai",
+   "model": "muse-spark-1.2",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 8000,
+   "cachedWriteTokens": 8000,
+   "costUsd": 0.005825,
+   "cacheSavingsUsd": 0.0088
+  },
+  {
+   "provider": "openai",
+   "model": "muse-spark-1.1",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 5000,
+   "cachedWriteTokens": 0,
+   "costUsd": 0.009125,
+   "cacheSavingsUsd": 0.0055
+  },
+  {
+   "provider": "openai",
+   "model": "muse-spark-1.1",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 0,
+   "cachedWriteTokens": 5000,
+   "costUsd": 0.014625,
+   "cacheSavingsUsd": 0
+  },
+  {
+   "provider": "openai",
+   "model": "muse-spark-1.1",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 4000,
+   "cachedWriteTokens": 3000,
+   "costUsd": 0.010225,
+   "cacheSavingsUsd": 0.0044
+  },
+  {
+   "provider": "openai",
+   "model": "muse-spark-1.1",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 8000,
+   "cachedWriteTokens": 8000,
+   "costUsd": 0.005825,
+   "cacheSavingsUsd": 0.0088
+  },
+  {
+   "provider": "openai",
+   "model": "muse-spark-1.3-contributor",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 5000,
+   "cachedWriteTokens": 0,
+   "costUsd": 0.00061,
+   "cacheSavingsUsd": 0.00049
+  },
+  {
+   "provider": "openai",
+   "model": "muse-spark-1.3-contributor",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 0,
+   "cachedWriteTokens": 5000,
+   "costUsd": 0.0011,
+   "cacheSavingsUsd": 0
+  },
+  {
+   "provider": "openai",
+   "model": "muse-spark-1.3-contributor",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 4000,
+   "cachedWriteTokens": 3000,
+   "costUsd": 0.000708,
+   "cacheSavingsUsd": 0.000392
+  },
+  {
+   "provider": "openai",
+   "model": "muse-spark-1.3-contributor",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 8000,
+   "cachedWriteTokens": 8000,
+   "costUsd": 0.000316,
+   "cacheSavingsUsd": 0.000784
+  },
+  {
+   "provider": "openai",
+   "model": "muse-spark-1.2-contributor",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 5000,
+   "cachedWriteTokens": 0,
+   "costUsd": 0.00061,
+   "cacheSavingsUsd": 0.00049
+  },
+  {
+   "provider": "openai",
+   "model": "muse-spark-1.2-contributor",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 0,
+   "cachedWriteTokens": 5000,
+   "costUsd": 0.0011,
+   "cacheSavingsUsd": 0
+  },
+  {
+   "provider": "openai",
+   "model": "muse-spark-1.2-contributor",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 4000,
+   "cachedWriteTokens": 3000,
+   "costUsd": 0.000708,
+   "cacheSavingsUsd": 0.000392
+  },
+  {
+   "provider": "openai",
+   "model": "muse-spark-1.2-contributor",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 8000,
+   "cachedWriteTokens": 8000,
+   "costUsd": 0.000316,
+   "cacheSavingsUsd": 0.000784
   },
   {
    "provider": "openai",
@@ -11689,6 +11901,206 @@
    "cachedWriteTokens": 8000,
    "costUsd": 0.000683,
    "cacheSavingsUsd": 0.001152
+  },
+  {
+   "provider": "meta",
+   "model": "muse-spark-1.3",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 5000,
+   "cachedWriteTokens": 0,
+   "costUsd": 0.009125,
+   "cacheSavingsUsd": 0.0055
+  },
+  {
+   "provider": "meta",
+   "model": "muse-spark-1.3",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 0,
+   "cachedWriteTokens": 5000,
+   "costUsd": 0.014625,
+   "cacheSavingsUsd": 0
+  },
+  {
+   "provider": "meta",
+   "model": "muse-spark-1.3",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 4000,
+   "cachedWriteTokens": 3000,
+   "costUsd": 0.010225,
+   "cacheSavingsUsd": 0.0044
+  },
+  {
+   "provider": "meta",
+   "model": "muse-spark-1.3",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 8000,
+   "cachedWriteTokens": 8000,
+   "costUsd": 0.005825,
+   "cacheSavingsUsd": 0.0088
+  },
+  {
+   "provider": "meta",
+   "model": "muse-spark-1.2",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 5000,
+   "cachedWriteTokens": 0,
+   "costUsd": 0.009125,
+   "cacheSavingsUsd": 0.0055
+  },
+  {
+   "provider": "meta",
+   "model": "muse-spark-1.2",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 0,
+   "cachedWriteTokens": 5000,
+   "costUsd": 0.014625,
+   "cacheSavingsUsd": 0
+  },
+  {
+   "provider": "meta",
+   "model": "muse-spark-1.2",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 4000,
+   "cachedWriteTokens": 3000,
+   "costUsd": 0.010225,
+   "cacheSavingsUsd": 0.0044
+  },
+  {
+   "provider": "meta",
+   "model": "muse-spark-1.2",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 8000,
+   "cachedWriteTokens": 8000,
+   "costUsd": 0.005825,
+   "cacheSavingsUsd": 0.0088
+  },
+  {
+   "provider": "meta",
+   "model": "muse-spark-1.1",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 5000,
+   "cachedWriteTokens": 0,
+   "costUsd": 0.009125,
+   "cacheSavingsUsd": 0.0055
+  },
+  {
+   "provider": "meta",
+   "model": "muse-spark-1.1",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 0,
+   "cachedWriteTokens": 5000,
+   "costUsd": 0.014625,
+   "cacheSavingsUsd": 0
+  },
+  {
+   "provider": "meta",
+   "model": "muse-spark-1.1",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 4000,
+   "cachedWriteTokens": 3000,
+   "costUsd": 0.010225,
+   "cacheSavingsUsd": 0.0044
+  },
+  {
+   "provider": "meta",
+   "model": "muse-spark-1.1",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 8000,
+   "cachedWriteTokens": 8000,
+   "costUsd": 0.005825,
+   "cacheSavingsUsd": 0.0088
+  },
+  {
+   "provider": "meta",
+   "model": "muse-spark-1.3-contributor",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 5000,
+   "cachedWriteTokens": 0,
+   "costUsd": 0.00061,
+   "cacheSavingsUsd": 0.00049
+  },
+  {
+   "provider": "meta",
+   "model": "muse-spark-1.3-contributor",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 0,
+   "cachedWriteTokens": 5000,
+   "costUsd": 0.0011,
+   "cacheSavingsUsd": 0
+  },
+  {
+   "provider": "meta",
+   "model": "muse-spark-1.3-contributor",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 4000,
+   "cachedWriteTokens": 3000,
+   "costUsd": 0.000708,
+   "cacheSavingsUsd": 0.000392
+  },
+  {
+   "provider": "meta",
+   "model": "muse-spark-1.3-contributor",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 8000,
+   "cachedWriteTokens": 8000,
+   "costUsd": 0.000316,
+   "cacheSavingsUsd": 0.000784
+  },
+  {
+   "provider": "meta",
+   "model": "muse-spark-1.2-contributor",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 5000,
+   "cachedWriteTokens": 0,
+   "costUsd": 0.00061,
+   "cacheSavingsUsd": 0.00049
+  },
+  {
+   "provider": "meta",
+   "model": "muse-spark-1.2-contributor",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 0,
+   "cachedWriteTokens": 5000,
+   "costUsd": 0.0011,
+   "cacheSavingsUsd": 0
+  },
+  {
+   "provider": "meta",
+   "model": "muse-spark-1.2-contributor",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 4000,
+   "cachedWriteTokens": 3000,
+   "costUsd": 0.000708,
+   "cacheSavingsUsd": 0.000392
+  },
+  {
+   "provider": "meta",
+   "model": "muse-spark-1.2-contributor",
+   "promptTokens": 10000,
+   "completionTokens": 500,
+   "cachedReadTokens": 8000,
+   "cachedWriteTokens": 8000,
+   "costUsd": 0.000316,
+   "cacheSavingsUsd": 0.000784
   },
   {
    "provider": "anthropic",

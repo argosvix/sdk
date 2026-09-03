@@ -4,6 +4,29 @@ All notable changes to `@argosvix/sdk` are documented in this file.
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and the project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.5.14 (2026-09-03)
+
+### Added
+- Meta Muse Spark support (9th provider). `wrap()` detects the Meta Model API
+  host (`api.meta.ai`, OpenAI-compatible) and records with provider "meta".
+  Consumer-domain hosts (`www.meta.ai` / `meta.com`) are not matched and stay
+  on the generic "openai" path. Pricing for `muse-spark-1.3` / `1.2` / `1.1`:
+  $1.25 in / $4.25 out / $0.15 cached input per 1M tokens (single tier across
+  the 1M context window); the `-contributor` variants are $0.10 / $0.20 /
+  $0.002. Verified against dev.meta.ai/docs/pricing-rate-limits on 2026-09-03.
+  Cached input arrives via `usage.prompt_tokens_details.cached_tokens` and is
+  priced separately.
+- AI SDK middleware maps the `meta` namespace (`createOpenAICompatible({ name:
+  "meta", baseURL: "https://api.meta.ai/v1" })`) to provider "meta". There is
+  no official `@ai-sdk/meta` package, and the AI Gateway is not inspected
+  (its models report the gateway namespace, not `meta`) — pass
+  `config.provider: "meta"` there.
+- LangChain callback: Meta has no first-party LangChain class, and the
+  documented path (`ChatOpenAI` with `baseURL` set to `api.meta.ai`) is
+  recorded as "openai" because the callback cannot see the base URL. Pass
+  `config.provider: "meta"` to record it correctly; the callback also accepts
+  `meta` / `meta_ai` provider ids for community wrappers.
+
 ## 0.5.13 (2026-08-28)
 
 - peerDependencies: `@anthropic-ai/sdk` を `^0.120.0` から `>=0.120.0` に、`@google/genai` を `^2.18.0` から `>=2.18.0` に拡大(v1 系 / 新 major の利用者が npm ERESOLVE を踏まないように。wrapper は provider SDK を import しない duck-typing のため構造依存なし)

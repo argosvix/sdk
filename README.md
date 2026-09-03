@@ -1,6 +1,6 @@
 # @argosvix/sdk
 
-Transparent observability wrapper for AI provider SDKs. Wrap a single line of code and get cost, latency, token, and error records for every LLM call across OpenAI, Anthropic, Gemini, Mistral, xAI Grok, Moonshot Kimi, DeepSeek, and Alibaba Qwen.
+Transparent observability wrapper for AI provider SDKs. Wrap a single line of code and get cost, latency, token, and error records for every LLM call across OpenAI, Anthropic, Gemini, Mistral, xAI Grok, Moonshot Kimi, DeepSeek, Alibaba Qwen, and Meta Muse Spark.
 
 > 🟢 **Live** — backend ingest (`ingest.argosvix.com`) and dashboard (`dashboard.argosvix.com`) are live. Published on npm as `@argosvix/sdk`. The entire sign-up to API-key flow runs in the browser; a Free plan and paid plans (Pro / Team) are available.
 >
@@ -23,8 +23,9 @@ Transparent observability wrapper for AI provider SDKs. Wrap a single line of co
 | **Moonshot Kimi** | ✅ | ✅ | Through the OpenAI-compatible endpoint. Detected from `baseURL` (`api.moonshot.ai` / `.cn`), or set `provider: "moonshot"` |
 | **DeepSeek** | ✅ | ✅ | Through the OpenAI-compatible endpoint. Detected from `baseURL` (`api.deepseek.com`), or set `provider: "deepseek"` |
 | **Alibaba Qwen** | ✅ | ✅ | Through the OpenAI-compatible endpoint. Detected from `baseURL` (`dashscope.aliyuncs.com` / `dashscope-intl.aliyuncs.com`), or set `provider: "alibaba"` |
+| **Meta Muse Spark** | ✅ | ✅ | Through the OpenAI-compatible endpoint. Detected from `baseURL` (`api.meta.ai`), or set `provider: "meta"` |
 
-Grok, Kimi, DeepSeek, and Qwen reuse the OpenAI wrapper because they serve an
+Grok, Kimi, DeepSeek, Qwen, and Muse Spark reuse the OpenAI wrapper because they serve an
 OpenAI-compatible API. You wrap the same `OpenAI` client you already have; the
 record carries the real provider so cost is priced with that provider's rates.
 
@@ -33,7 +34,7 @@ record carries the real provider so cost is priced with that provider's rates.
 ```bash
 npm install @argosvix/sdk openai
 # Also install the SDKs for any other providers you use (Anthropic, Gemini, Mistral).
-# Grok / Kimi / DeepSeek / Qwen need no extra SDK — they use the OpenAI client.
+# Grok / Kimi / DeepSeek / Qwen / Muse Spark need no extra SDK — they use the OpenAI client.
 ```
 
 ### Obtain an API key
