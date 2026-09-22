@@ -37,6 +37,7 @@ export const PRICING: Record<Provider, Record<string, PricingEntry>> = {
     // kept here for legacy SDKs / unknown-host OpenAI-compatible calls).
     // ⚠ createOpenAI({ baseURL: "https://api.x.ai/v1" }) のような経路は provider が
     //    "openai" のまま届くので、ここに無いとコスト 0 の行になる(2026-07-26 追加)。
+    "grok-4.7": { inputPer1M: 2.0, outputPer1M: 6.0, cachedInputPer1M: 0.5 , longContext: { thresholdPromptTokens: 200_000, inputPer1M: 4.0, outputPer1M: 12.0, cachedInputPer1M: 1.0 } },
     "grok-4.6": { inputPer1M: 2.0, outputPer1M: 6.0, cachedInputPer1M: 0.5 , longContext: { thresholdPromptTokens: 200_000, inputPer1M: 4.0, outputPer1M: 12.0, cachedInputPer1M: 1.0 } },
     "grok-4.5": { inputPer1M: 2.0, outputPer1M: 6.0, cachedInputPer1M: 0.3 , longContext: { thresholdPromptTokens: 200_000, inputPer1M: 4.0, outputPer1M: 12.0, cachedInputPer1M: 0.6 } },
     "grok-4.3": { inputPer1M: 1.25, outputPer1M: 2.5, cachedInputPer1M: 0.2 , longContext: { thresholdPromptTokens: 200_000, inputPer1M: 2.5, outputPer1M: 5.0, cachedInputPer1M: 0.4 } },
@@ -122,6 +123,11 @@ export const PRICING: Record<Provider, Record<string, PricingEntry>> = {
   },
   // 2026-07-17: OpenAI 互換勢の実プロバイダー(SDK が baseURL から判別して送る)
   xai: {
+    // 2026-09-21 リリース(x.ai/news/grok-4-7)。docs.x.ai/docs/models/grok-4.7 の
+    // Markdown 版と docs.x.ai/developers/pricing の一覧表で 2026-09-22(UTC)照合。単価・キャッシュ・
+    // 200k 以上の段階とも 4.6 と同値(公式明記)。別名の記載なし(載ったら追加する)。
+    // ⚠ US 限定の地域エンドポイントは 1.1 倍になるが、4.6 と同じく本表では扱わない
+    "grok-4.7": { inputPer1M: 2.0, outputPer1M: 6.0, cachedInputPer1M: 0.5 , longContext: { thresholdPromptTokens: 200_000, inputPer1M: 4.0, outputPer1M: 12.0, cachedInputPer1M: 1.0 } },
     // 2026-08-12 リリース(x.ai/news/grok-4-6)。docs.x.ai/docs/models/grok-4.6 で
     // 2026-08-13 照合。4.5 と違いキャッシュ入力の段階($0.50 / $1.00)まで公式ページに
     // 明記あり(推測ではない)。別名の記載なし(載ったら追加する)
